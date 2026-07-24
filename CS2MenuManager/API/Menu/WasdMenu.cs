@@ -83,7 +83,7 @@ public class WasdMenuInstance : BaseMenuInstance
         };
 
         Player.SaveSpeed(ref OldVelocityModifier);
-        
+
         // Restore previously saved menu state (if exists)
         RestoreMenuState();
     }
@@ -95,13 +95,12 @@ public class WasdMenuInstance : BaseMenuInstance
     {
         if (Menu is not WasdMenu wasdMenu) return;
 
-        string leftArrow = $"<font color='{wasdMenu.WasdMenu_ArrowColor}'>▶ [</font>";
-        string rightArrow = $"<font color='{wasdMenu.WasdMenu_ArrowColor}'> ] ◀</font>";
+        string leftArrow = $"<font color='{wasdMenu.WasdMenu_ArrowColor}'>»</font>";
 
         StringBuilder builder = new();
         int totalPages = (int)Math.Ceiling((double)Menu.ItemOptions.Count / MenuItemsPerPage);
         int currentPage = Page + 1;
-        builder.Append($"<font color='{wasdMenu.WasdMenu_TitleColor}'>{Menu.Title}</font> ({currentPage}/{totalPages})<br>");
+        builder.Append($"<font color='{wasdMenu.WasdMenu_TitleColor}'>{Menu.Title}</font> <i><font class='fontSize-s' color='{wasdMenu.WasdMenu_DisabledOptionColor}'>{currentPage}/{totalPages}</font></i><br>");
 
         int maxIndex = Math.Min(CurrentOffset + MenuItemsPerPage, Menu.ItemOptions.Count);
         for (int i = CurrentOffset; i < maxIndex; i++)
@@ -112,9 +111,9 @@ public class WasdMenuInstance : BaseMenuInstance
                 builder.AppendLine(option.DisableOption switch
                 {
                     DisableOption.None =>
-                        $"{leftArrow} <font color='{wasdMenu.WasdMenu_SelectedOptionColor}'>{option.Text}</font> {rightArrow}<br>",
+                        $"{leftArrow} <font color='{wasdMenu.WasdMenu_SelectedOptionColor}'>{option.Text}</font><br>",
                     DisableOption.DisableShowNumber or DisableOption.DisableHideNumber =>
-                        $"{leftArrow} <font color='{wasdMenu.WasdMenu_DisabledOptionColor}'>{option.Text}</font> {rightArrow}<br>",
+                        $"{leftArrow} <font color='{wasdMenu.WasdMenu_DisabledOptionColor}'>{option.Text}</font><br>",
                     _ => string.Empty
                 });
             }
@@ -131,19 +130,19 @@ public class WasdMenuInstance : BaseMenuInstance
             }
         }
 
-        List<string> buttomText =
-        [
-            $"<font class='fontSize-s' color='{wasdMenu.WasdMenu_ScrollUpDownKeyColor}'>{Player.Localizer("ScrollKey", wasdMenu.WasdMenu_ScrollUpKey, wasdMenu.WasdMenu_ScrollDownKey)}</font>",
-            $"<font class='fontSize-s' color='{wasdMenu.WasdMenu_SelectKeyColor}'>{Player.Localizer("SelectKey", wasdMenu.WasdMenu_SelectKey)}</font>"
-        ];
+        List<string> buttomText = [];
 
         if (wasdMenu.PrevMenu != null)
-            buttomText.Add($"<font class='fontSize-s' color='{wasdMenu.WasdMenu_PrevKeyColor}'>{Player.Localizer("PrevKey", wasdMenu.WasdMenu_PrevKey)}</font>");
+            buttomText.Add($"{Player.Localizer("PrevKey")}");
+
+        buttomText.Add($"{Player.Localizer("ScrollKey")}");
+
+        buttomText.Add($"{Player.Localizer("SelectKey")}");
 
         if (HasExitButton)
-            buttomText.Add($"<font class='fontSize-s' color='{wasdMenu.WasdMenu_ExitKeyColor}'>{Player.Localizer("ExitKey", wasdMenu.WasdMenu_ExitKey)}</font>");
+            buttomText.Add($"{Player.Localizer("ExitKey")}");
 
-        builder.AppendLine(string.Join(" | ", buttomText));
+        builder.AppendLine(string.Join(" ", buttomText));
 
         DisplayString = builder.ToString();
     }
@@ -155,7 +154,7 @@ public class WasdMenuInstance : BaseMenuInstance
     {
         // Save current menu state before closing
         SaveMenuState();
-        
+
         base.Close(exitSound);
         Menu.Plugin.RemoveListener<OnTick>(OnTick);
 
@@ -220,7 +219,7 @@ public class WasdMenuInstance : BaseMenuInstance
 
         // Save current menu state before selecting an option
         SaveMenuState();
-        
+
         HandleSelectAction(option);
     }
 
@@ -263,7 +262,7 @@ public class WasdMenuInstance : BaseMenuInstance
         if (!string.IsNullOrEmpty(Config.Sound.ScrollUp))
             Player.ExecuteClientCommand($"play {Config.Sound.ScrollUp}");
     }
-    
+
     /// <summary>
     /// Saves the current menu state (page number, offset, selected option, and page offset stack)
     /// </summary>
@@ -274,7 +273,7 @@ public class WasdMenuInstance : BaseMenuInstance
         {
             MenuStateStorage[Player.SteamID] = new Dictionary<string, MenuState>();
         }
-        
+
         // Use the menu title as the key to save the state of this menu
         MenuStateStorage[Player.SteamID][Menu.Title] = new MenuState
         {
@@ -284,20 +283,20 @@ public class WasdMenuInstance : BaseMenuInstance
             PrevPageOffsets = new Stack<int>(PrevPageOffsets) // Create a copy of the stack
         };
     }
-    
+
     /// <summary>
     /// Restores the previously saved menu state (page number, offset, selected option, and page offset stack)
     /// </summary>
     private void RestoreMenuState()
     {
-        if (MenuStateStorage.ContainsKey(Player.SteamID) && 
+        if (MenuStateStorage.ContainsKey(Player.SteamID) &&
             MenuStateStorage[Player.SteamID].ContainsKey(Menu.Title))
         {
             MenuState state = MenuStateStorage[Player.SteamID][Menu.Title];
             Page = state.Page;
             CurrentOffset = state.CurrentOffset;
             CurrentChoiceIndex = state.CurrentChoiceIndex;
-            
+
             // Restore the page offset stack
             PrevPageOffsets.Clear();
             foreach (int offset in state.PrevPageOffsets)
@@ -306,7 +305,7 @@ public class WasdMenuInstance : BaseMenuInstance
             }
         }
     }
-    
+
     /// <summary>
     /// Menu state class, used to save the page number, offset, selected option, and page offset stack of a menu
     /// </summary>
@@ -317,12 +316,12 @@ public class WasdMenuInstance : BaseMenuInstance
         public int CurrentChoiceIndex { get; set; }
         public Stack<int> PrevPageOffsets { get; set; } = new Stack<int>();
     }
-    
+
     /// <summary>
     /// Static dictionary used to store menu states for all players
     /// </summary>
     private static readonly Dictionary<ulong, Dictionary<string, MenuState>> MenuStateStorage = new();
-    
+
     /// <summary>
     /// Cleans up the menu state for a specific player
     /// </summary>
@@ -334,7 +333,7 @@ public class WasdMenuInstance : BaseMenuInstance
             MenuStateStorage.Remove(steamId);
         }
     }
-    
+
     /// <summary>
     /// Cleans up all menu states
     /// </summary>
@@ -357,11 +356,11 @@ public static class WasdMenuStateManager
     {
         // Register player disconnect event
         plugin.RegisterEventHandler<EventPlayerDisconnect>(OnPlayerDisconnect);
-        
+
         // Register round end event
         plugin.RegisterEventHandler<EventRoundEnd>(OnRoundEnd);
     }
-    
+
     /// <summary>
     /// Handles player disconnect event
     /// </summary>
@@ -373,7 +372,7 @@ public static class WasdMenuStateManager
         }
         return HookResult.Continue;
     }
-    
+
     /// <summary>
     /// Handles round end event
     /// </summary>

@@ -204,42 +204,6 @@ public abstract partial class BaseMenu
     }
 
     /// <summary>
-    /// Gets or sets the color of the scroll up/down buttons.
-    /// </summary>
-    public string WasdMenu_ScrollUpDownKeyColor
-    {
-        get => _wasdMenuScrollUpDownKeyColor;
-        set => _wasdMenuScrollUpDownKeyColor = ConditionalSet(Config.WasdMenu.ScrollUpDownKeyColor, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the color of the select button.
-    /// </summary>
-    public string WasdMenu_SelectKeyColor
-    {
-        get => _wasdMenuSelectKeyColor;
-        set => _wasdMenuSelectKeyColor = ConditionalSet(Config.WasdMenu.SelectKeyColor, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the color of the prev button.
-    /// </summary>
-    public string WasdMenu_PrevKeyColor
-    {
-        get => _wasdMenuPrevKeyColor;
-        set => _wasdMenuPrevKeyColor = ConditionalSet(Config.WasdMenu.PrevKeyColor, value);
-    }
-
-    /// <summary>
-    /// Gets or sets the color of the exit button.
-    /// </summary>
-    public string WasdMenu_ExitKeyColor
-    {
-        get => _wasdMenuExitKeyColor;
-        set => _wasdMenuExitKeyColor = ConditionalSet(Config.WasdMenu.ExitKeyColor, value);
-    }
-
-    /// <summary>
     /// Gets or sets the color of the selected option.
     /// </summary>
     public string WasdMenu_SelectedOptionColor
